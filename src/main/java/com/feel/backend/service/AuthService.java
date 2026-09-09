@@ -10,9 +10,11 @@ import com.feel.backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final AdminUserRepository adminUserRepository;
@@ -112,6 +114,7 @@ public class AuthService {
     /**
      * 회원가입 완료 (닉네임 저장 후 JWT 발급)
      */
+    @Transactional
     public LoginResponse completeSignup(String idToken, String nickname) {
         GoogleTokenInfo info = googleTokenVerifier.verify(idToken);
         String email = info.getEmail();

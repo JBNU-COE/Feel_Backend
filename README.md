@@ -64,6 +64,26 @@ docker-compose down -v
 
 ## API 엔드포인트
 
+### 인증 API (`/api/auth`)
+
+Google 소셜 로그인(ID 토큰) + 관리자 비밀번호 로그인.
+
+| 메서드 | 엔드포인트 | 설명 |
+|--------|-----------|------|
+| POST | `/api/auth/google` | Google ID 토큰 로그인 (`@jbnu.ac.kr`만). body: `{ "idToken": "..." }` |
+| POST | `/api/auth/signup` | 신규 가입(닉네임). body: `{ "idToken": "...", "nickname": "..." }` |
+| POST | `/api/auth/login` | 관리자 username/password 로그인 |
+| GET | `/api/auth/verify` | `Authorization: Bearer <JWT>` 검증 |
+| POST | `/api/auth/logout` | 로그아웃 (클라이언트 토큰 삭제용, 서버는 no-op) |
+
+**Google 로그인 흐름**
+1. 프론트에서 Google Identity Services로 ID 토큰 발급
+2. `POST /api/auth/google` — 기존 유저면 `token` 반환, 신규면 `needSignup: true` + `email`
+3. 신규는 닉네임 입력 후 `POST /api/auth/signup`
+4. 이후 API 호출 시 `Authorization: Bearer <token>`
+
+환경변수 `GOOGLE_CLIENT_ID`는 프론트 Client ID와 동일해야 합니다. (`.env.example` 참고)
+
 ### 공지사항 API (`/api/notices`)
 
 | 메서드 | 엔드포인트 | 설명 |
